@@ -1,0 +1,143 @@
+Receipt No.,Completion Time,Details,Transaction Status,Paid In,Withdrawn,Balance
+RBO4DPSOWC,2023-02-24 14:25:46,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAEB05D86E23.",Completed,"1,000.00",,"1,118.52"
+RBO2DFLOOK,2023-02-24 12:33:09,"Customer Transfer to -2547******498 ESTHER MUTINDA",Completed,,-100.00,118.52
+RBO9CX1Z5X,2023-02-24 08:56:30,"Customer Transfer to -2547******518 MIRITI FRANK",Completed,,-60.00,218.52
+RBN1BB6UT9,2023-02-23 16:00:45,"Merchant Payment to 7721524 -MAGUNANDU SHOP",Completed,,-40.00,278.52
+RBN5B9RYH7,2023-02-23 15:44:09,"Customer Transfer of FundsCharge",Completed,,-22.00,318.52
+RBN5B9RYH7,2023-02-23 15:44:09,"Customer Transfer to -2547******330 GLADYS CHESIRE",Completed,,"-1,150.00",340.52
+RBN4B3XJJO,2023-02-23 14:33:31,Withdrawal Charge,Completed,,-27.00,"1,490.52"
+RBN4B3XJJO,2023-02-23 14:33:31,"Customer Withdrawal At AgentTill 487233 - Kijani Africa LimitedHomeland Twin House RimpaAgg",Completed,,-200.00,"1,517.52"
+RBN7AJUQXT,2023-02-23 10:37:31,"Customer Transfer to -07******153 Martin Witundu",Completed,,-50.00,"1,717.52"
+RBN9AHLMVX,2023-02-23 10:10:48,Pay Bill Charge,Completed,,-40.00,"1,767.52"
+RBN9AHLMVX,2023-02-23 10:10:48,"Pay Bill Online to 4006927 -STYLE UP DRIVING SCHOOL 2021Acc. 11292",Completed,,"-6,800.00","1,807.52"
+RBN6AHHYXU,2023-02-23 10:09:36,"Business Payment from 329299 -STANDARD CHARTERED BANKvia API. Original conversation IDis 254720930607-KE-IBNK-bJTUzv.",Completed,"7,000.00",,"8,607.52"
+RBM483YB9O,2023-02-22 11:13:44,"Customer Transfer to -2547******432 KELVIN MASAI",Completed,,-100.00,"1,607.52"
+RBL27E87EW,2023-02-21 22:23:47,"Funds received from -07******256 Lawrence Maina",Completed,500.00,,"1,707.52"
+RBL07BRTEW,2023-02-21 21:46:53,"Customer Transfer to -07******279 LYLIAN WANYONYI",Completed,,-100.00,"1,207.52"
+RBL96SYEYX,2023-02-21 19:14:29,"Merchant Payment to 7836910 -KENNETH  ODHIAMBO  2 ..",Completed,,-20.00,"1,307.52"
+RBL264E8H8,2023-02-21 15:21:14,"Customer Transfer of FundsCharge",Completed,,-22.00,"1,327.52"
+RBL264E8H8,2023-02-21 15:21:14,"Customer Transfer to -2547******859 mark ngugi",Completed,,"-1,050.00","1,349.52"
+RBL964AZMR,2023-02-21 15:20:20,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAEA29E9CF23.",Completed,"2,000.00",,"2,399.52"
+RBL456HJRK,2023-02-21 08:36:54,"Merchant Payment to 7214379 -ATLAS WINES AND SPIRIT 3",Completed,,-50.00,399.52
+RBK92TN357,2023-02-20 10:08:36,"Merchant Payment to 7213197 -QUICK MART Kiserian",Completed,,-804.00,449.52
+RBK02NWFJO,2023-02-20 08:59:17,Withdrawal Charge,Completed,,-10.00,"1,253.52"
+RBK02NWFJO,2023-02-20 08:59:17,"Customer Withdrawal At AgentTill 487233 - Kijani Africa LimitedHomeland Twin House RimpaAgg",Completed,,-50.00,"1,263.52"
+RBJ81UZLLA,2023-02-19 19:48:50,"Customer Transfer to -2547******541 ANNE MUNENE",Completed,,-50.00,"1,313.52"
+RBJ4ZQNMKS,2023-02-19 12:49:46,"Customer Transfer of FundsCharge",Completed,,-32.00,"1,363.52"
+RBJ4ZQNMKS,2023-02-19 12:49:46,"Customer Transfer to -2547******903 JOHN MULUKA",Completed,,"-2,000.00","1,395.52"
+RBJ8ZQM36Q,2023-02-19 12:49:16,"Customer Transfer of FundsCharge",Completed,,-6.00,"3,395.52"
+RBJ8ZQM36Q,2023-02-19 12:49:16,"Customer Transfer to -07******683 Faith Mbalia",Completed,,-300.00,"3,401.52"
+RBJ5ZQ041J,2023-02-19 12:41:34,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAE9D9F70723.",Completed,"4,000.00",,"4,000.00"
+RBJ2ZQ0D4Y,2023-02-19 12:41:34,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-298.48,"3,701.52"
+RBI5YFDR97,2023-02-18 19:50:20,OverDraft of Credit Party,Completed,100.00,,0.00
+RBI5YFDR97,2023-02-18 19:50:20,"Merchant Payment Fuliza M-Pesato 6155856 -     FRANCISNJUNGUNA KINYANJUI",Completed,,-100.00,-100.00
+RBI2XLG8R2,2023-02-18 15:24:40,"Customer Transfer of FundsCharge",Completed,,-6.00,0.00
+RBI2XLG8R2,2023-02-18 15:24:40,OverDraft of Credit Party,Completed,195.52,,6.00
+RBI2XLG8R2,2023-02-18 15:24:40,"Customer Transfer Fuliza MPesato - 2547******239 BONFACEIKONZE",Completed,,-500.00,-189.52
+Receipt No.,Completion Time,Details,Transaction Status,Paid In,Withdrawn,Balance
+RBI4WYS3HA,2023-02-18 11:18:56,"Customer Transfer to -2547******994 ANTONY KIMANI",Completed,,-450.00,316.48
+RBH4W5Z142,2023-02-17 21:57:41,"Customer Transfer of FundsCharge",Completed,,-6.00,766.48
+RBH4W5Z142,2023-02-17 21:57:41,"Customer Transfer to -2547******585 RONALD MURULI",Completed,,-500.00,772.48
+RBH0VP6RJC,2023-02-17 19:32:50,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-227.52,"1,272.48"
+RBH5VP7809,2023-02-17 19:32:48,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAE98E657423.",Completed,"1,500.00",,"1,500.00"
+RBH8UP2E16,2023-02-17 13:46:21,OverDraft of Credit Party,Completed,40.00,,0.00
+RBH8UP2E16,2023-02-17 13:46:21,"Customer Transfer Fuliza MPesato - 2547******263 PETERNASURUTIA",Completed,,-40.00,-40.00
+RBH8U56I4A,2023-02-17 09:56:23,"Customer Transfer of FundsCharge",Completed,,-6.00,0.00
+RBH8U56I4A,2023-02-17 09:56:23,OverDraft of Credit Party,Completed,185.26,,6.00
+RBH8U56I4A,2023-02-17 09:56:23,"Customer Transfer Fuliza MPesato - 2547******027 NTHIWAKASOA",Completed,,-240.00,-179.26
+RBG6TMJMAE,2023-02-16 22:43:09,"Customer Transfer of FundsCharge",Completed,,-6.00,60.74
+RBG6TMJMAE,2023-02-16 22:43:09,"Customer Transfer to -2547******029 Lawrence maina",Completed,,-230.00,66.74
+RBG0T8IN66,2023-02-16 20:06:46,"Customer Transfer to -07******407 Newton Kakethe",Completed,,-100.00,296.74
+RBG7SZI88P,2023-02-16 19:06:43,"Merchant Payment to 7851873 -TEREGO WINES",Completed,,-280.00,396.74
+RBG0SHH7EW,2023-02-16 16:24:57,"Merchant Payment to 7587891 -Elizabeth Okongo",Completed,,-280.00,676.74
+RBG7RS116J,2023-02-16 11:28:34,"Merchant Payment to 7214379 -ATLAS WINES AND SPIRIT 3",Completed,,-50.00,956.74
+RBG0RRTWZ0,2023-02-16 11:26:16,"Merchant Payment to 7721524 -MAGUNANDU SHOP",Completed,,-60.00,"1,006.74"
+RBG6RJHPDK,2023-02-16 09:49:52,"Customer Transfer of FundsCharge",Completed,,-6.00,"1,066.74"
+RBG6RJHPDK,2023-02-16 09:49:52,"Customer Transfer to -2547******822 JACKLINEMUTINDA",Completed,,-500.00,"1,072.74"
+RBG1RJF6KJ,2023-02-16 09:49:05,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-427.26,"1,572.74"
+RBG7RJEZSJ,2023-02-16 09:49:04,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAE94B3EEB23.",Completed,"2,000.00",,"2,000.00"
+RBE9O2EWAH,2023-02-14 20:34:04,"Customer Transfer of FundsCharge",Completed,,-12.00,0.00
+RBE9O2EWAH,2023-02-14 20:34:04,OverDraft of Credit Party,Completed,423.02,,12.00
+RBE9O2EWAH,2023-02-14 20:34:04,"Customer Transfer Fuliza MPesato - 2547******498 ESTHERMUTINDA",Completed,,-600.00,-411.02
+RBE0NDBBNY,2023-02-14 17:20:32,Pay Bill Charge,Completed,,-1.00,188.98
+RBE0NDBBNY,2023-02-14 17:20:32,"Pay Bill Online to 4093275 -Direct Pay Limited 1 Acc.ATL43596181",Completed,,-15.00,189.98
+RBE6ND5MW6,2023-02-14 17:18:55,Pay Bill Charge,Completed,,-2.00,204.98
+RBE6ND5MW6,2023-02-14 17:18:55,"Pay Bill to 220220 - PesaPal Acc.0750594250",Completed,,-100.00,206.98
+RBE7NBJIJR,2023-02-14 17:02:50,"Customer Transfer of FundsCharge",Completed,,-51.00,306.98
+RBE7NBJIJR,2023-02-14 17:02:50,"Customer Transfer to -2547******915 DENNIS MUTINDA",Completed,,"-3,500.00",357.98
+RBE4MYN2KS,2023-02-14 14:36:47,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAE903546A23.",Completed,"2,000.00",,"3,857.98"
+RBE9MU12PJ,2023-02-14 13:44:48,Pay Bill Charge,Completed,,-1.00,"1,857.98"
+RBE9MU12PJ,2023-02-14 13:44:48,"Pay Bill Online to 4093275 -Direct Pay Limited 1 Acc.ATL43499301",Completed,,-15.00,"1,858.98"
+RBE7MAXC7X,2023-02-14 10:07:49,"Merchant Payment Online to7214379 - ATLAS WINES ANDSPIRIT 3",Completed,,-50.00,"1,873.98"
+RBE6M8CH20,2023-02-14 09:37:12,"Deposit of Funds at Agent Till487226 -  KIJANI AFRICALtdKidabizz Enterprise by  KIJANIAFRICA LtdKidabizz Enterprise\lm",Completed,"1,500.00",,"1,923.98"
+RBD0LNNQ2K,2023-02-13 21:56:53,"Merchant Payment to 7031759 -WA MALIMALI GEN SHOP",Completed,,-250.00,423.98
+RBD4KIKNN0,2023-02-13 15:49:42,Pay Bill Charge,Completed,,-4.00,673.98
+Receipt No.,Completion Time,Details,Transaction Status,Paid In,Withdrawn,Balance
+RBD4KIKNN0,2023-02-13 15:49:42,"Pay Bill to 220220 - PesaPal Acc.0750594250",Completed,,-130.00,677.98
+RBD9KII6WP,2023-02-13 15:48:56,"Customer Transfer of FundsCharge",Completed,,-6.00,807.98
+RBD9KII6WP,2023-02-13 15:48:56,"Customer Transfer to -2547******585 RONALD MURULI",Completed,,-500.00,813.98
+RBD6JY0KYY,2023-02-13 11:54:03,"Customer Transfer to -2547******204 SAMUEL SOKOINE",Completed,,-80.00,"1,313.98"
+RBD3JXRTJV,2023-02-13 11:51:00,"Merchant Payment to 7213197 -QUICK MART Kiserian",Completed,,-250.00,"1,393.98"
+RBC8HS0JE0,2023-02-12 14:09:09,"Customer Transfer of FundsCharge",Completed,,-22.00,"1,643.98"
+RBC8HS0JE0,2023-02-12 14:09:09,"Customer Transfer to -2547******551 ROBERT MUCHIRI",Completed,,"-1,500.00","1,665.98"
+RBC0HRV33Y,2023-02-12 14:07:17,"Business Payment from 149444 -CO-OP BANK via API. Originalconversation ID isOMNIRIB_AAE8B7C6EA23.",Completed,"3,000.00",,"3,165.98"
+RBB5FRUSSR,2023-02-11 17:35:29,"Customer Transfer of FundsCharge",Completed,,-6.00,165.98
+RBB5FRUSSR,2023-02-11 17:35:29,"Customer Transfer to -07******407 Newton Kakethe",Completed,,-200.00,171.98
+RBB1F7C8FT,2023-02-11 14:01:28,"Customer Transfer of FundsCharge",Completed,,-12.00,371.98
+RBB1F7C8FT,2023-02-11 14:01:28,"Customer Transfer to -07******818 NAFTAL MICHIRA",Completed,,-800.00,383.98
+RBB7F6SE3V,2023-02-11 13:55:44,M-Shwari Withdraw,Completed,"1,000.00",,"1,183.98"
+RBA3DW75HT,2023-02-10 21:26:45,"Customer Transfer to -2547******367 James Wairimu",Completed,,-100.00,183.98
+RBA1DP6GIN,2023-02-10 20:25:25,"Customer Transfer of FundsCharge",Completed,,-6.00,283.98
+RBA1DP6GIN,2023-02-10 20:25:25,"Customer Transfer to -2547******498 ESTHER MUTINDA",Completed,,-200.00,289.98
+RBA6DI0CHG,2023-02-10 19:35:32,"Customer Transfer of FundsCharge",Completed,,-6.00,489.98
+RBA6DI0CHG,2023-02-10 19:35:32,"Customer Transfer to -01******865 MARY WAMBUI",Completed,,-115.00,495.98
+RBA4D84PV8,2023-02-10 18:23:47,"Customer Transfer of FundsCharge",Completed,,-12.00,610.98
+RBA4D84PV8,2023-02-10 18:23:47,"Customer Transfer to -07******395 Anna Mutinda",Completed,,-700.00,622.98
+RBA6CK56LW,2023-02-10 14:16:57,"Merchant Payment to 6155856 -FRANCIS NJUNGUNA KINYANJUI",Completed,,-50.00,"1,322.98"
+RBA8CJ7F7S,2023-02-10 14:06:34,"Customer Transfer of FundsCharge",Completed,,-6.00,"1,372.98"
+RBA8CJ7F7S,2023-02-10 14:06:34,"Customer Transfer to -2547******585 RONALD MURULI",Completed,,-500.00,"1,378.98"
+RBA1CJ56DB,2023-02-10 14:05:56,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-121.02,"1,878.98"
+RBA8CJ5IB8,2023-02-10 14:05:56,M-Shwari Withdraw,Completed,"2,000.00",,"2,000.00"
+RBA1CFMSIV,2023-02-10 13:27:49,OverDraft of Credit Party,Completed,119.82,,0.00
+RBA1CFMSIV,2023-02-10 13:27:49,"Pay Bill Online Fuliza M-Pesa to244441 - SAFARICOM POSTPAIDBUNDLES Acc. EasyTalk",Completed,,-500.00,-119.82
+RBA1C5BUHB,2023-02-10 11:31:59,"Customer Transfer of FundsCharge",Completed,,-6.00,380.18
+RBA1C5BUHB,2023-02-10 11:31:59,"Customer Transfer to -2547******498 ESTHER MUTINDA",Completed,,-500.00,386.18
+RBA8C5B5RS,2023-02-10 11:31:45,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-113.82,886.18
+RBA2C5B2RK,2023-02-10 11:31:45,M-Shwari Withdraw,Completed,"1,000.00",,"1,000.00"
+RB97B4IJZ5,2023-02-09 20:52:20,OverDraft of Credit Party,Completed,75.00,,0.00
+RB97B4IJZ5,2023-02-09 20:52:20,"Merchant Payment Fuliza M-PesaOnline to 795596 - Msafiributchery  V",Completed,,-75.00,-75.00
+RB92A9T932,2023-02-09 16:41:49,OverDraft of Credit Party,Completed,37.69,,0.00
+RB92A9T932,2023-02-09 16:41:49,"Merchant Payment Fuliza M-Pesato 7912456 - ARCADIA THEEXECUTIVE BARBER SHOP",Completed,,-400.00,-37.69
+RB93A15FV1,2023-02-09 15:02:58,"Customer Transfer of FundsCharge",Completed,,-12.00,362.31
+RB93A15FV1,2023-02-09 15:02:58,"Customer Transfer to -2547******551 ROBERT MUCHIRI",Completed,,-600.00,374.31
+RB898I6VDD,2023-02-08 21:03:10,"Card Pay Bill Online to 903470 -M-PESA GlobalPay Acc.0583039649881874PlaystationNetwork London GB",Completed,,"-1,250.59",974.31
+RB838I6B5Z,2023-02-08 21:02:59,M-Shwari Withdraw,Completed,"1,000.00",,"2,224.90"
+RB785XDQWY,2023-02-07 21:15:50,"Merchant Payment Online to7822434 -    ERIC FRANCIS",Completed,,-85.00,"1,224.90"
+Receipt No.,Completion Time,Details,Transaction Status,Paid In,Withdrawn,Balance
+RB785QCJUQ,2023-02-07 20:14:53,"Customer Transfer of FundsCharge",Completed,,-6.00,"1,309.90"
+RB785QCJUQ,2023-02-07 20:14:53,"Customer Transfer to -2547******498 ESTHER MUTINDA",Completed,,-300.00,"1,315.90"
+RB745QB6KG,2023-02-07 20:14:39,"OD Loan Repayment to 232323 -M-PESA Overdraw",Completed,,-384.10,"1,615.90"
+RB765QAS6Q,2023-02-07 20:14:37,M-Shwari Withdraw,Completed,"2,000.00",,"2,000.00"
+RB7043KK9E,2023-02-07 10:59:29,OverDraft of Credit Party,Completed,60.00,,0.00
+RB7043KK9E,2023-02-07 10:59:29,"Merchant Payment Fuliza M-Pesato 7721524 -    MAGUNANDUSHOP",Completed,,-60.00,-60.00
+RB671HFZFT,2023-02-06 11:19:10,OverDraft of Credit Party,Completed,100.00,,0.00
+RB671HFZFT,2023-02-06 11:19:10,"Customer Transfer Fuliza MPesato - 07******416 KEVIN MISHISH",Completed,,-100.00,-100.00
+RB45WNCH7J,2023-02-04 19:32:51,Withdrawal Charge,Completed,,-10.00,0.00
+RB45WNCH7J,2023-02-04 19:32:51,OverDraft of Credit Party,Completed,60.00,,10.00
+RB45WNCH7J,2023-02-04 19:32:51,"Customer Withdrawal at AgentTill with Fuliza to 487226 -KIJANI AFRICA LtdKidabizzEnterprise",Completed,,-50.00,-50.00
+RB48WM8IC6,2023-02-04 19:25:13,OverDraft of Credit Party,Completed,150.00,,0.00
+RB48WM8IC6,2023-02-04 19:25:13,"Merchant Payment Fuliza M-Pesato 7602993 - NEW NORMALRESTAURANT",Completed,,-150.00,-150.00
+RB48WAK3EE,2023-02-04 17:53:10,"Customer Transfer of FundsCharge",Completed,,-6.00,0.00
+RB48WAK3EE,2023-02-04 17:53:10,OverDraft of Credit Party,Completed,10.29,,6.00
+RB48WAK3EE,2023-02-04 17:53:10,"Customer Transfer Fuliza MPesato - 07******256 Lawrence Maina",Completed,,-280.00,-4.29
+RB48W3SISO,2023-02-04 16:51:40,"Merchant Payment to 7715905 -LABAN MURIMI MBOGO",Completed,,-160.00,275.71
+RB44VB7VQ8,2023-02-04 12:02:00,"Customer Transfer of FundsCharge",Completed,,-22.00,435.71
+RB44VB7VQ8,2023-02-04 12:02:00,"Customer Transfer to -2547******526 Leon Kioko",Completed,,"-1,050.00",457.71
+RB34UABUO4,2023-02-03 21:28:57,"Merchant Payment to 795596 -Msafiri butchery  V",Completed,,-200.00,"1,507.71"
+RB31TSKL71,2023-02-03 19:13:20,"Customer Transfer of FundsCharge",Completed,,-6.00,"1,707.71"
+RB31TSKL71,2023-02-03 19:13:20,"Customer Transfer to -07******683 Faith Mbalia",Completed,,-190.00,"1,713.71"
+RB19N1YNW1,2023-02-01 10:27:23,"Customer Transfer of FundsCharge",Completed,,-6.00,"1,331.71"
+RB19N1YNW1,2023-02-01 10:27:23,"Customer Transfer to -2547******498 ESTHER MUTINDA",Completed,,-300.00,"1,337.71"
+RB17MU04KB,2023-02-01 08:51:48,Pay Bill Charge,Completed,,-4.00,"1,637.71"
+RB17MU04KB,2023-02-01 08:51:48,"Pay Bill Online to 516600 - DTBAccount Acc. 268862",Completed,,-449.00,"1,641.71"
+RB15MTURCZ,2023-02-01 08:49:46,"Business Payment from 329299 -STANDARD CHARTERED BANKvia API. Original conversation IDis 254720930607-KE-IBNK-k2gIAh.",Completed,"2,000.00",,"2,090.71"
