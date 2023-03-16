@@ -8,13 +8,7 @@ const csv = require("csvtojson");
 const appendFileSync = require('fs').appendFileSync
 const fs = require('fs')
 const bodyparser = require('body-parser');
-const winston = require('winston');
 
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
-});
 
 app.use(cors());
 app.use(bodyparser.json({ type: 'application/*+json'}))
@@ -87,7 +81,7 @@ app.post('/csv', (req, res) => {
   res.set(headers)
 
   let pagesarr = []
-  console.log(req.body)
+
   var fileinfo = req.body.filepath
   var name = req.body.fileselected
   var path = `${name}`
@@ -116,8 +110,6 @@ app.post('/csv', (req, res) => {
   });
   
    setTimeout(() => {
-    console.log(pwd,pagesarr)
-    logger.info(pwd, pagesarr)
     
 
     // get the first 9 rows 
@@ -176,7 +168,6 @@ app.post('/csv', (req, res) => {
 
 app.use(bodyparser.json());
 app.post('/data', (req, res) => {
-  console.log(req.body)
   let file = req.body.fileselected
   let snddata = []
   res.set(headers)
