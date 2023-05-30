@@ -18,6 +18,7 @@ Server.code-workspace
 /uploads
 /__pycache__
 .env
+finalyze.sql
 
 
 # misc
