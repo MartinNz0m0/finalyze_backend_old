@@ -14,6 +14,10 @@ import auth
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/')
+def hello_world():
+    return 'Py is running'
+
 @app.route('/search', methods=['POST'])
 def searchfun():
     query = request.json.get('query')
@@ -330,7 +334,7 @@ def coopgroup():
         return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8001)
+    app.run(port=8001)
 
 
 

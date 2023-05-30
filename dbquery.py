@@ -278,7 +278,7 @@ def getlateststatement(user):
         sql = f"SELECT * FROM data where name = %s"
         val = (user,)
         myresult = db_select(sql, val)
-
+        print(myresult)
         currdate = date.today()
         # check date and get that curr date is greater than date in db by one month
         for x in myresult:
