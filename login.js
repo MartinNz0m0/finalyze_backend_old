@@ -1,5 +1,6 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 
 const LocalStrategy = require('passport-local').Strategy;
@@ -25,8 +26,8 @@ const login = (req, resp, next) => {
          if (err) {
              resp.send(err);
          }           // generate a signed son web token with the contents of username object and return it in the response
-         const options = { expiresIn: '7d' };           
-         const token = jwt.sign(username, 'your_jwt_secret', options);
+         const options = { expiresIn: '1d' };           
+         const token = jwt.sign(username, process.env.SECRET, options);
          return resp.json({username, token});
       });
     })(req, resp, next);

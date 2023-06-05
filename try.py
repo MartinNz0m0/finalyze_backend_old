@@ -9,6 +9,10 @@ import jwt
 import userinput
 import bank
 import auth
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -26,7 +30,7 @@ def searchfun():
     if auth_header is not None and auth_header.startswith('Bearer '):
     # Extract the JWT from the Authorization header
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         
         # Decode the JWT to get the user
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
@@ -64,7 +68,7 @@ def usermodel():
     if auth_header is not None and auth_header.startswith('Bearer '):
     # Extract the JWT from the Authorization header
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         
         # Decode the JWT to get the user
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
@@ -96,7 +100,7 @@ def insertcat():
     if auth_header is not None and auth_header.startswith('Bearer '):
     # Extract the JWT from the Authorization header
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         
         # Decode the JWT to get the user
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
@@ -122,7 +126,7 @@ def getallcat():
     removeduplicates = request.json.get('removeduplicates')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -151,7 +155,7 @@ def editcat():
     newbudget = request.json.get('newbudget')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -232,7 +236,7 @@ def deletecat():
     sttype = request.json.get('sttype')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -254,7 +258,7 @@ def addbudget():
     print(priority)
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -277,7 +281,7 @@ def getcat():
     auth_header = request.headers.get('Authorization')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -303,7 +307,7 @@ def getcatall():
     auth_header = request.headers.get('Authorization')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')
@@ -321,7 +325,7 @@ def coopgroup():
     auth_header = request.headers.get('Authorization')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
-        secret_key = 'your_jwt_secret'
+        secret_key = os.getenv("SECRET")
         decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
         user = decoded_jwt.get('name')
         role = decoded_jwt.get('role')

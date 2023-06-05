@@ -100,7 +100,5 @@ exports.uploadequity = (req, res) => {
                 })
             }
         }
-    }
-    )
-
+    })
 }

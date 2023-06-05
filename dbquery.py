@@ -2,39 +2,46 @@ import mysql.connector
 from datetime import date, datetime, timedelta
 import os
 from dotenv import load_dotenv
+from mysql.connector import pooling
 
 load_dotenv()
 
+db_pool = pooling.MySQLConnectionPool(
+    pool_name="my_pool",
+    pool_size=20,
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASS"),
+    database="finalyze"
+)
+
 def db_insert_prepared(query, values):
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor(prepared=True)
         mycursor.execute(query, values)
         mydb.commit()
-
+        mycursor.close()
+        mydb.close()
         return 'ok'
     except mysql.connector.Error as error:
+        print("Error: {}".format(error))
+        mydb.close()
         return error
 
 
 def db_select(query, values):
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
+        mydb = db_pool.get_connection()
         mycursor = mydb.cursor(prepared=True)
         mycursor.execute(query, values)
         myresult = mycursor.fetchall()
+        mycursor.close()
+        mydb.close()
         return myresult
     except mysql.connector.Error as error:
+        print("Error: {}".format(error))
+        mydb.close()
         return error
 
 
@@ -50,17 +57,10 @@ def get_file_names(user, stttype):
 
     return file
 
-
 def insertcat(userinp, details, fuliza_dets, online_dets, user, sttype):
     currdate = date.today()
-
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor()
         # Prepare the SQL statement with placeholders
         sql = "INSERT INTO usermodel (name, details, category, date_added, statement_type) VALUES (%s, %s, %s, %s, %s)"
@@ -85,9 +85,12 @@ def insertcat(userinp, details, fuliza_dets, online_dets, user, sttype):
         myresult = mycursor.fetchall()
         for x in myresult:
             jibu.append(x[2])
+        mycursor.close()
+        mydb.close()
         return jibu
 
     except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
 
 
@@ -175,13 +178,8 @@ def getcat(user, stttype):
 
 
 def editcategory(userinp, details, user, sttype, newbudget):
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor(prepared=True)
         # Prepare the SQL statement with placeholders
         sql = f"UPDATE usermodel SET category = %s WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
@@ -199,19 +197,18 @@ def editcategory(userinp, details, user, sttype, newbudget):
         mycursor.execute(
             f"SELECT * FROM usermodel where statement_type = '{sttype}' and name = '{user}'")
         myresult = mycursor.fetchall()
+        # close the cursor and database connection
+        mycursor.close()
+        mydb.close()
         return myresult
     except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
 
 
 def deletecat(details, user, sttype):
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor()
         sql = f"DELETE FROM usermodel WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
         mycursor.execute(sql)
@@ -221,18 +218,16 @@ def deletecat(details, user, sttype):
         mycursor.execute(f"SELECT * FROM usermodel where name = '{user}'")
         myresult = mycursor.fetchall()
         return myresult
+        mycursor.close()
+        mydb.close()
     except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
 
 
 def updatebudget(user, budget, category, sttype, priority):
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor(prepared=True)
         if priority:
             if budget:
@@ -257,8 +252,11 @@ def updatebudget(user, budget, category, sttype, priority):
         mycursor.execute(
             f"SELECT * FROM usermodel where statement_type = '{sttype}' and name = '{user}'")
         myresult = mycursor.fetchall()
+        mycursor.close()
+        mydb.close()
         return myresult
     except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
 
 
@@ -297,13 +295,14 @@ def getlateststatement(user):
             dateobj = datetime.strptime(startdate, '%Y-%m-%d').date()
             enddateobj = datetime.strptime(enddate, '%Y-%m-%d').date()
             # first check that the two dates are less than 35 days apart
-            if enddateobj - dateobj > timedelta(days=35):
-
-                return 'no statement'
-            # check that end date is not older than 35 days
+            if enddateobj - dateobj > timedelta(days=40):
+                print('statement too big', x, enddateobj - dateobj)
+                pass
+            # check that end date is not older than 32 days
             diff = currdate - enddateobj
-            if diff < timedelta(days=35):
-
+            print(diff, x)
+            if diff < timedelta(days=32):
+                print('found statement')
                 return x[2], x[5]
             else:
                 pass
@@ -315,12 +314,7 @@ def getlateststatement(user):
 def checkcoopfiledaterange(user, file, date):
     sttype = 'coop'
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
+        mydb = db_pool.get_connection()
         mycursor = mydb.cursor()
         jibu = []
         mycursor.execute(
@@ -334,6 +328,8 @@ def checkcoopfiledaterange(user, file, date):
             return 'ok'
         else:
             return 'already inserted'
+        mycursor.close()
+        mydb.close()
     except mysql.connector.Error as error:
         print("Error: {}".format(error))
 
@@ -351,6 +347,7 @@ def checkequityfiledaterange(user, file, date):
         return 'ok'
     else:
         return 'already inserted'
+    
 
 
 def getallcategories(user):
@@ -366,6 +363,7 @@ def checkcoopcosts(user):
         sql = f"SELECT * FROM usermodel where name = %s and statement_type = %s"
         val = (user, sttype)
         myresult = db_select(sql, val)
+        jibu = []
         for x in myresult:
             jibu.append(x[2])
         return jibu
@@ -390,13 +388,8 @@ def insertcooptcosts(user, details):
     statement_type = 'coop'
     userinp = 'Transcation Costs'
 
+    mydb = db_pool.get_connection()
     try:
-        mydb = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASS"),
-            database="finalyze"
-        )
         mycursor = mydb.cursor()
         sql = "INSERT INTO usermodel (name, details, category, date_added, statement_type) VALUES (%s, %s, %s, %s, %s)"
 
@@ -411,10 +404,12 @@ def insertcooptcosts(user, details):
         myresult = mycursor.fetchall()
         for x in myresult:
             jibu.append(x[2])
-
+        mycursor.close()
+        mydb.close()
         return jibu
 
     except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
 
 

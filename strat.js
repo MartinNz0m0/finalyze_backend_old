@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const passportJWT = require("passport-jwt");
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
+require('dotenv').config();
 
 const LocalStrategy = require("passport-local").Strategy;
 
@@ -48,7 +49,7 @@ passport.use(
   new JWTStrategy(
     {
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-      secretOrKey: "your_jwt_secret",
+      secretOrKey: process.env.SECRET,
     },
     function (jwtPayload, cb) {
       //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.

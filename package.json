@@ -29,7 +29,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "^3.5.141",
+    "pdfjs-dist": "^2.9.359",
     "polyfill": "^0.1.0",
     "winston": "^3.8.2"
   }

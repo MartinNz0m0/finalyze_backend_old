@@ -276,7 +276,6 @@ def insert_mpesa_costs(user):
         # if res is empty array then insert
         if not res:
             res2 = dbquery.insertmpesacosts(x, user)
-            print(res2)
 
 # time analysis of mpesa transactions
 def mpesa_time_analysis(file):

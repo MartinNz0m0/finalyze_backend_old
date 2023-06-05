@@ -1,6 +1,9 @@
 const pool = require('./db')
 const fs = require('fs')
 const csv = require("csvtojson");
+const pdfjs = require('pdfjs-dist')
+const Tabula = require("fresh-tabula-js");
+const appendFileSync = require('fs').appendFileSync
 
 
 const headers = ({
@@ -58,7 +61,7 @@ exports.data = (req, res) => {
         else if (re.length==0) {
           console.log('doesnt exist creating new')
            // removed settimeout from here \
-            pool.query(`INSERT INTO finalyze.data (name, pdf_name, piedata, date, date_uploaded) VALUES ('${user}', '${file}', '${pdata}','${date}', '${date_uploaded}')`, (er, r) => {
+            pool.query(`INSERT INTO finalyze.data (name, pdf_name, date, date_uploaded, statement_type) VALUES ('${user}', '${file}', '${date}', '${date_uploaded}', 'mpesa')`, (er, r) => {
               console.log(er, r);
             });
   
@@ -83,7 +86,7 @@ exports.data = (req, res) => {
 }
 
 exports.convert = (req, res) => {
-  res.set(headers)
+  // res.set(headers)
 
   let pagesarr = []
   var fileinfo = req.body.filepath
@@ -106,25 +109,20 @@ exports.convert = (req, res) => {
   // check if csv exists
   if (user) {
     // check if the csv exists, notify user csv exists
-    fs.exists(csvpath, function(exists) {
-      if (exists) {
-      res.status(500).json('File exists, please delete the file first')
+      if (fs.existsSync(csvpath)) {
+      res.json('File exists, please delete the file first')
   } else {
     // do nothing
   }
-
-})
-  } else {
-    // delete existing csv
-  fs.exists(csvpath, function(exists) {
-    if(exists) {
+} else {
+    // delete existing csv 
+    if(fs.existsSync(csvpath)) {
         console.log('File exists. Deleting now ...');
         fs.unlinkSync(csvpath)
         fs.unlinkSync(csvpath2);
     } else {
         console.log('File not found, so not deleting.');
     }
-  });
 }
   
    setTimeout(() => {
@@ -160,7 +158,6 @@ exports.convert = (req, res) => {
 
  
       var first9 = first.extractCsv().output
-      logger.info(first9)
       var result = table.extractCsv().output
       var otherp = other.extractCsv().output;
   
@@ -176,6 +173,6 @@ exports.convert = (req, res) => {
       }
  }, 3000)
 
- }, 2000)
+ }, 1000)
     
 }

@@ -685,6 +685,9 @@ def overspend_index(user):
         else:
             # no files
             pass
-    overspend_ind = sum(ov_totals)/len(ov_totals)
+    try:
+        overspend_ind = sum(ov_totals)/len(ov_totals)
+    except:
+        overspend_ind = 0
     return overspend_ind*100
     
