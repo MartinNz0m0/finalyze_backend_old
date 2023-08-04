@@ -31,8 +31,8 @@ def db_insert_prepared(query, values):
 
 
 def db_select(query, values):
+    mydb = db_pool.get_connection()
     try:
-        mydb = db_pool.get_connection()
         mycursor = mydb.cursor(prepared=True)
         mycursor.execute(query, values)
         myresult = mycursor.fetchall()
@@ -423,6 +423,27 @@ def addequitycosts(user, details):
     try:
         db_insert_prepared(query, val)
         return 'ok'
+    except mysql.connector.Error as error:
+        print("Error: {}".format(error))
+        return 'Error', error
+
+
+def update_last_sync(user, date):
+    try:
+        sql = f"UPDATE data SET last_synced = %s WHERE name = %s"
+        val = (date, user)
+        db_insert_prepared(sql, val)
+        return 'ok'
+    except mysql.connector.Error as error:
+        print("Error: {}".format(error))
+        return 'Error', error
+
+def check_last_sync(user):
+    try:
+        sql = f"SELECT * FROM data WHERE name = %s"
+        val = (user,)
+        dbreq = db_select(sql, val)
+        return dbreq[0][6]
     except mysql.connector.Error as error:
         print("Error: {}".format(error))
         return 'Error', error

@@ -1,4 +1,5 @@
 const pool = require('./db');
+const axios = require('axios')
 
 const headers = ({
     'Content-Type': 'application/json',
@@ -31,7 +32,6 @@ exports.uploadcoop = (req, res) => {
       } else {
         // check if the file exists
         let fileexists = false
-        console.log(jibu)
         for (let i = 0; i < jibu.length; i++) {
           if (jibu[i].pdf_name == name) {
             fileexists = true
@@ -69,6 +69,8 @@ exports.uploadequity = (req, res) => {
     let pagesarr = []
     var name = req.file.originalname
     var fileinfo = req.file.path;
+    var pdflock = req.file.locked
+    var pdfpwd = req.file.password
     namearr.push(name)
     currdate = new Date()
 
@@ -94,8 +96,22 @@ exports.uploadequity = (req, res) => {
                         res.status(500).json(e)
                     } else {
                         // do nothing
-
-                        res.status(200).json('File uploaded')
+                      // api call to py to convert pdf to csv
+                      axios.post('http://localhost:8001/conequity', {
+                        name, pdflock, pdfpwd
+                      })
+                      .then((response) => {
+                        console.log(response.data)
+                        if (response.data == 'success') {
+                          console.log('success')
+                          res.status(200).json('File uploaded')
+                        }
+                        else if (response.data == 'failed') {
+                          res.status(500).json('File upload failed')
+                        }
+                      }, (error) => {
+                        console.log(error);
+                      });
                     }
                 })
             }

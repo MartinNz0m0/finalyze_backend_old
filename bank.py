@@ -347,23 +347,27 @@ def coop_time_analysis(file):
 
 
 # quick function for equity statements
-def equityconvert(file):
+def equityconvert(file, pdflock, pdfpwd):
     # convert equity statements to csv
     path = f"./uploads/{file}"
-    reader = PdfReader(f'{path}')
+    if pdflock:
+        reader = PdfReader(f'{path}', password=pdfpwd)
+    else:
+        reader = PdfReader(f'{path}')
     pages = len(reader.pages)
     dimensions = [253.44, 33.84, 645.84, 572.4]
     otherpagedimensions = [141.12, 50.4, 635.04, 591.12]
     columns = [105.12, 162.72, 273.6, 332.64, 416.16, 501.84]
-    firstpage = tabula.convert_into(
+    if pdflock:
+        firstpage = tabula.convert_into(
+            path, f"./uploads/{file}1.csv", output_format="csv", pages='1', area=dimensions, password=pdfpwd)
+        otherpages = tabula.convert_into(path, f"./uploads/{file}2.csv", output_format="csv",
+                                         pages=f'2-{pages}', area=otherpagedimensions, stream=True, guess=False, columns=columns, password=pdfpwd)
+    else:
+        firstpage = tabula.convert_into(
         path, f"./uploads/{file}1.csv", output_format="csv", pages='1', area=dimensions)
-    otherpages = tabula.convert_into(path, f"./uploads/{file}2.csv", output_format="csv",
+        otherpages = tabula.convert_into(path, f"./uploads/{file}2.csv", output_format="csv",
                                      pages=f'2-{pages}', area=otherpagedimensions, stream=True, guess=False, columns=columns)
-
-    # remove empty columns from first page csv
-    # df = pd.read_csv(f"./uploads/{file}1.csv")
-    # df = df.dropna(axis=1, how='all')
-    # df.to_csv(f"./uploads/{file}1.csv", index=False)
 
     # combine the two csv files
     with open(f'./uploads/{file}1.csv', 'w', newline='') as csvfile:
@@ -429,7 +433,7 @@ def equitystatements(file):
         # if file does not exist, return error
         print('File does not exist')
         try:
-            equityconvert(file)
+            equityconvert(file, False, None)
         except Exception as e:
             print(e)
             return f'Error, {e} something is wrong with the file', 400
@@ -472,7 +476,7 @@ def equitystatementsearch(file):
         # if file does not exist, return error
         print('File does not exist')
         try:
-            equityconvert(file)
+            equityconvert(file, False, None)
         except Exception as e:
             print(e)
             return f'Error, {e} something is wrong with the file', 400

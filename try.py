@@ -9,6 +9,7 @@ import jwt
 import userinput
 import bank
 import auth
+import msgreader
 from dotenv import load_dotenv
 import os
 
@@ -228,6 +229,8 @@ def dashdata():
                 
             ind = bank.overspend_index(user)          
             return [len(category), totalbudget, round(ind, 1)]
+    else:
+        return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/deletecat', methods=['POST'])
 def deletecat():
@@ -336,6 +339,48 @@ def coopgroup():
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
+
+@app.route('/conequity', methods=['POST'])
+def conequity():
+    file = request.json.get('name')
+    pdflock = request.json.get('pdflock')
+    pdfpwd = request.json.get('pdfpwd')
+    try:
+        bank.equityconvert(file, pdflock, pdfpwd)
+        return jsonify({'message': 'success'})
+    except:
+        return jsonify({'message': 'failed'})
+
+@app.route('/msgreceive', methods=['POST'])
+def msgreceive():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jwt_token = auth_header.split(' ')[1]
+        secret_key = os.getenv("SECRET")
+        decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
+        user = decoded_jwt.get('name')
+        role = decoded_jwt.get('role')
+        if user is None:
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            msg = request.json.get('msg')
+            res = msgreader.mpesa_csvwriter(f"mpesa_{user}.csv", msg, user)
+            if res == "ok":
+                return jsonify("ok")
+    else:
+        return jsonify({'message': 'Invalid credentials'}), 401
+
+@app.route('/lastsync', methods=['POST'])
+def lastsync():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            res = dbquery.check_last_sync(user)
+            return jsonify(res)
 
 if __name__ == '__main__':
     app.run(port=8001)
