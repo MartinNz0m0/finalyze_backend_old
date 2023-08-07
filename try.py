@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 import mysql.connector
-import dbquery
 from flask import *
 from flask_cors import CORS
+import datetime
+import dbquery
 import searchfunc
 import jwt
 import userinput
@@ -367,6 +368,8 @@ def msgreceive():
             res = msgreader.mpesa_csvwriter(f"mpesa_{user}.csv", msg, user)
             if res == "ok":
                 return jsonify("ok")
+            else:
+                return jsonify("failed")
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
@@ -380,7 +383,7 @@ def lastsync():
         else:
             user = jibu[0]
             res = dbquery.check_last_sync(user)
-            return jsonify(res)
+            return jsonify(res.strftime("%Y-%m-%d %H:%M:%S.000Z"))
 
 if __name__ == '__main__':
     app.run(port=8001)
