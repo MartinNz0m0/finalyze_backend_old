@@ -19,7 +19,7 @@ def mpesa_msgreader(msg, file):
     regex_pattern_till = r'([A-Z0-9]+) Confirmed\. Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) paid to ([A-Za-z\s.]+) on (\d+/\d+/\d+) at (\d+:\d+ [APM]+)\.New M-PESA balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Transaction cost, Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Amount you can transact within the day is (\d{1,3}(?:,\d{3})*\.\d{2})\.'
     regex_pattern_rec = r'([A-Z0-9]+) Confirmed\.You have received Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) from ([A-Za-z0-9\s-]+) ([0-9]+)? on (\d+/\d+/\d+) at (\d+:\d+ [APM]+)(?:\s)*New M-PESA balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\.'
     regex_pattern_snd = r'([A-Z0-9]+) Confirmed\. Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) sent to ([A-Za-z\s]+)\s+(\d{10}) on (\d+/\d+/\d+) at (\d+:\d+ [APM]+)\. New M-PESA balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Transaction cost, Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Amount you can transact within the day is (\d+\,\d+\.\d{2})\.'
-    regex_pattern_pbill = r'([A-Z0-9]+) Confirmed\. Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) sent to ([A-Za-z\s\-()]+(?: \d+)?) for account ([A-Za-z0-9\-()]+) on (\d+/\d+/\d+) at (\d+:\d+ [APM]+) New M-PESA balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Transaction cost, Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\.'
+    regex_pattern_pbill = r'([A-Z0-9]+) Confirmed\. Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) sent to ([A-Za-z\s\-()]+(?: \d+)?) for account ([A-Za-z0-9\s\-()*!?]+) on (\d+/\d+/\d+) at (\d+:\d+ [APM]+) New M-PESA balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Transaction cost, Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\.'
     regex_pattern_airtime = r'([A-Z0-9]+) confirmed\.You bought Ksh(\d{1,3}(?:,\d{3})*\.\d{2}) of airtime for (\d{12}) on (\d+/\d+/\d+) at (\d+:\d+ [APM]+)\.New  balance is Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Transaction cost, Ksh(\d{1,3}(?:,\d{3})*\.\d{2})\. Amount you can transact within the day is (\d{1,3}(?:,\d{3})*\.\d{2})\.'
     for i in range(len(msg)):
         if 'received' in msg[i]['body']: # TODO: check for failed, cancelled and fuliza transcations
@@ -187,6 +187,7 @@ def mpesa_msgreader(msg, file):
 def mpesa_csvwriter(file, msg ,user):
     data = mpesa_msgreader(msg, file)
     exists = os.path.isfile(f'uploads/{file}')
+    date = datetime.datetime.now()
     if not data:
         return
         print('No new data')
@@ -199,7 +200,6 @@ def mpesa_csvwriter(file, msg ,user):
                 writer.writeheader()
             for i in range(len(data)):
                 writer.writerow(data[i])
-        date = datetime.datetime.now()
         res = dbquery.update_last_sync(user, date)
         return res
 

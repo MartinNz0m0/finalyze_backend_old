@@ -443,7 +443,36 @@ def check_last_sync(user):
         sql = f"SELECT * FROM data WHERE name = %s"
         val = (user,)
         dbreq = db_select(sql, val)
+        if dbreq == []:
+            # generate date of last 24 hours
+            date = datetime.now()
+            lsync = date - timedelta(days=1)
+            insertfile(user, f'mpesa_{user}', 'mpesa', '2023-08-01 - 2023-08-02', date, lsync) # TODO: change db
+            return lsync
         return dbreq[0][6]
     except mysql.connector.Error as error:
+        print("Error: {}".format(error))
+        return 'Error', error
+
+
+def insertfile(user, file, sttype, date, date_uploaded, last_synced=None):
+    mydb = db_pool.get_connection()
+    try:
+        mycursor = mydb.cursor()
+        if last_synced:
+            sql = "INSERT INTO data (name, pdf_name, statement_type, date, date_uploaded, last_synced) VALUES (%s, %s, %s, %s, %s, %s)"
+            values = (user, file, sttype, date, date_uploaded, last_synced)
+        else:
+            sql = "INSERT INTO data (name, pdf_name, statement_type, date, date_uploaded) VALUES (%s, %s, %s, %s, %s)"
+            values = (user, file, sttype, date, date_uploaded)
+
+        cursor = mydb.cursor(prepared=True)
+        cursor.execute(sql, values)
+        mydb.commit()
+        mycursor.close()
+        mydb.close()
+        return 'ok'
+    except mysql.connector.Error as error:
+        mydb.close()
         print("Error: {}".format(error))
         return 'Error', error

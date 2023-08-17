@@ -8,6 +8,8 @@ import dbquery
 import searchfunc
 import jwt
 import userinput
+import mpesa_funcs
+import redis_funcs
 import bank
 import auth
 import msgreader
@@ -80,7 +82,14 @@ def usermodel():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             if sttype == 'mpesa':
-                response = userinput.userinput(user, num, sttype)
+                if redis_funcs.redis_exists(user, f'usermodel{sttype}{num}'):
+                    response = redis_funcs.redis_get(user, f'usermodel{sttype}{num}')
+                    response = json.loads(response)
+                    print('got usermodel from redis')
+                else:
+                    response = mpesa_funcs.userinput(user, num, sttype)
+                    redis_funcs.redis_set(user, f'usermodel{sttype}{num}', json.dumps(response))
+                    print('got usermodel from db')
                 return jsonify(response)
             elif sttype == 'coop':
                 response = bank.groupbycoop(user, num, sttype)
@@ -112,18 +121,22 @@ def insertcat():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             if sttype == 'mpesa':
-                res = userinput.usersubmit(userinp, details, user, sttype)
+                res = mpesa_funcs.usersubmit(userinp, details, user, sttype)
+                # redis_funcs.redis_del(user, 'allcats')
+                # redis_funcs.redis_del(user, 'dashdata')
+                # redis_funcs.redis_del(user, 'categoryanalmpesa')
+                redis_funcs.redis_del_all(user)
+                for i in range(1, 6):
+                    redis_funcs.redis_del(user, f'usermodelmpesa{i}')
                 return jsonify(res)
             else:
                 res = dbquery.insertcoopcat(userinp, details, user, sttype)
                 return jsonify(res)
-            
-
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/getallcats', methods=['POST'])
-def getallcat():
+def getallcats():
     auth_header = request.headers.get('Authorization')
     removeduplicates = request.json.get('removeduplicates')
     if auth_header is not None and auth_header.startswith('Bearer '):
@@ -135,10 +148,14 @@ def getallcat():
         if user is None:
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
-            res = dbquery.getallcategories(user)
+            if redis_funcs.redis_exists(user, 'allcats'):
+                res = redis_funcs.redis_get(user, 'allcats')
+                res = json.loads(res)
+            else:
+                res = dbquery.getallcategories(user)
+                redis_funcs.redis_set(user, 'allcats', json.dumps(res))
             if removeduplicates == True:
                 finalres = []
-
                 for i in res:
                     if i[3] not in [arr[3] for arr in finalres]:
                         finalres.append(i)
@@ -165,12 +182,13 @@ def editcat():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             res = dbquery.editcategory(userinp, details, user, sttype, newbudget)
+            redis_funcs.redis_del_all(user)
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
 @app.route('/lateststatement', methods=['POST'])
-def lateststatement():
+def lateststatement(): #TODO: abandon this function??
     auth_header = request.headers.get('Authorization')
     if auth_header is not None and auth_header.startswith('Bearer '):
         jibu = auth.jwt_verify(auth_header)
@@ -183,8 +201,8 @@ def lateststatement():
                 return jsonify(res)
             else:
                 if res[1] == 'mpesa':
-                    resp = userinput.categoryanal(res[0], user)
-                    response = userinput.mpesa_time_analysis(res[0])
+                    resp = mpesa_funcs.categoryanal(res[0], user)
+                    response = mpesa_funcs.mpesa_time_analysis(res[0])
                     return jsonify([resp, response])
                 elif res[1] == 'coop':
                     resp = bank.coopquickanal('demo-coop', user)
@@ -209,26 +227,41 @@ def dashdata():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             user = jibu[0]
-            cats = dbquery.getallcategories(user)
+            if redis_funcs.redis_exists(user, 'dashdata'):
+                res = redis_funcs.redis_get(user, 'dashdata')
+                res = json.loads(res)
+                return jsonify(res)
+            if redis_funcs.redis_exists(user, 'allcats'):
+                cats = redis_funcs.redis_get(user, 'allcats')
+                cats = json.loads(cats)
+                print('getting cats from redis')
+            else:
+                print('getting cats from db')
+                cats = dbquery.getallcategories(user) #TODO: get from redis
+                redis_funcs.redis_set(user, 'allcats', json.dumps(cats))
             # create empy array for categories
             category = []
             # create empy array for total budget
             budget = []
             for x in cats:
                 category.append(x[3])
-                
+                # push budget as well
+                # if x[6]:
+                #     budget.append(x[6])
+                #     print(x[6])
             # remove duplicates for category array
             category = list(dict.fromkeys(category))
             # add sum for budget array
             for x in category:
-                bud = dbquery.getbudget(user, x)
+                bud = dbquery.getbudget(user, x) #TODO: dont query db for each category
                 if bud:
                     budget.append(bud)
             totalbudget = 0
             for x in budget:
-                totalbudget += int(x)
-                
-            ind = bank.overspend_index(user)          
+                totalbudget += int(x)           
+            ind = bank.overspend_index(user) 
+            dash_list = [len(category), totalbudget, round(ind, 1)]
+            redis_funcs.redis_set(user, 'dashdata', json.dumps(dash_list))         
             return [len(category), totalbudget, round(ind, 1)]
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
@@ -239,15 +272,13 @@ def deletecat():
     details = request.json.get('det')
     sttype = request.json.get('sttype')
     if auth_header is not None and auth_header.startswith('Bearer '):
-        jwt_token = auth_header.split(' ')[1]
-        secret_key = os.getenv("SECRET")
-        decoded_jwt = jwt.decode(jwt_token, secret_key ,algorithms=['HS256'])
-        user = decoded_jwt.get('name')
-        role = decoded_jwt.get('role')
-        if user is None:
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
+            user = jibu[0]
             res = dbquery.deletecat(details, user, sttype)
+            redis_funcs.redis_del_all(user)
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
@@ -259,7 +290,6 @@ def addbudget():
     sttype = request.json.get('sttype')
     category = request.json.get('cat')
     priority = request.json.get('priority')
-    print(priority)
     if auth_header is not None and auth_header.startswith('Bearer '):
         jwt_token = auth_header.split(' ')[1]
         secret_key = os.getenv("SECRET")
@@ -270,8 +300,7 @@ def addbudget():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             res = dbquery.updatebudget(user, budget, category, sttype, priority)
-            # remove duplicates from the list if category is the same
-     
+            redis_funcs.redis_del_all(user)
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
@@ -293,7 +322,12 @@ def getcat():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             if sttype == 'mpesa':
-                res = userinput.categoryanal(file, user)
+                if redis_funcs.redis_exists(user, 'categoryanalmpesa'):
+                    res = redis_funcs.redis_get(user, 'categoryanalmpesa')
+                    res = json.loads(res)
+                else:
+                    res = mpesa_funcs.categoryanal(file, user) #TODO: get from redis
+                    redis_funcs.redis_set(user, 'categoryanalmpesa', json.dumps(res))
                 return jsonify(res)
             elif sttype == 'coop':
                 res = bank.coopquickanal(file, user)
@@ -318,7 +352,7 @@ def getcatall():
         if user is None:
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
-            res = userinput.categoryanalall(user)
+            res = mpesa_funcs.categoryanalall(user) #TODO: get from redis
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
@@ -336,7 +370,7 @@ def coopgroup():
         if user is None:
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
-            res = bank.groupbycoop(user, num)
+            res = bank.groupbycoop(user, num) #TODO: get from redis
             return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
@@ -369,7 +403,7 @@ def msgreceive():
             if res == "ok":
                 return jsonify("ok")
             else:
-                return jsonify("failed")
+                return jsonify("ok") # TODO: change this to failed
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
@@ -382,7 +416,9 @@ def lastsync():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             user = jibu[0]
-            res = dbquery.check_last_sync(user)
+            res = dbquery.check_last_sync(user) #TODO: get from redis
+            if res == 'no sync':
+                return jsonify(res)
             return jsonify(res.strftime("%Y-%m-%d %H:%M:%S.000Z"))
 
 if __name__ == '__main__':

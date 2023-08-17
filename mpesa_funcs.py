@@ -1,29 +1,29 @@
 import pandas as pd
 import dbquery
-
+import datetime
 
 def userinput(user, num, stttype):
     file = dbquery.get_file_names(user, stttype)
-
+    #TODO: replace file with universal file
     userres = []
     # arrays for collecting similar transactions
     customer = []
     paybillarr = []
     tillarr = []
     for x in file:
-        df = pd.read_csv(f'./uploads/{x}.csv')
-        df.fillna(0, inplace=True)
-        df.replace('\r', ' ', regex=True, inplace=True)
+        # df = pd.read_csv(f'./uploads/{x}.csv')
+        # df.fillna(0, inplace=True)
+        # df.replace('\r', ' ', regex=True, inplace=True)
 
-        remw = df.loc[df.Withdrawn != "Withdrawn"].copy()
-        # remw = remw.reset_index(drop=True)
-        remw['Withdrawn'] = remw.Withdrawn.str.replace("-", "", regex=False)
-        remw['Withdrawn'] = remw.Withdrawn.str.replace(",", "", regex=False)
-        remw['Withdrawn'] = remw['Withdrawn'].fillna(0).astype(float)
-        remw['Paid In'] = remw['Paid In'].str.replace(",", "", regex=False)
-        remw['Paid In'] = remw['Paid In'].fillna(0).astype(float)
+        # remw = df.loc[df.Withdrawn != "Withdrawn"].copy()
+        # # remw = remw.reset_index(drop=True)
+        # remw['Withdrawn'] = remw.Withdrawn.str.replace("-", "", regex=False)
+        # remw['Withdrawn'] = remw.Withdrawn.str.replace(",", "", regex=False)
+        # remw['Withdrawn'] = remw['Withdrawn'].fillna(0).astype(float)
+        # remw['Paid In'] = remw['Paid In'].str.replace(",", "", regex=False)
+        # remw['Paid In'] = remw['Paid In'].fillna(0).astype(float)
         # convert to int
-
+        remw = mpesa_df(x)
         # groupings the
         group = remw.groupby('Details')
         # module for prompting user input
@@ -161,7 +161,7 @@ def usersubmit(userinp, details, user, sttype):
 # function for getting category transcations per statement
 
 def mpesa_df(file):
-    df = pd.read_csv(f'./uploads/{file}.csv')
+    df = pd.read_csv(f'./uploads/{file}.csv', converters={'Withdrawn': str, 'Paid In': str, 'Balance': str})
     df.fillna(0, inplace=True)
     df.replace('\r', ' ', regex=True, inplace=True)
     df.replace('\n', ' ', regex=True, inplace=True)
@@ -237,7 +237,7 @@ def categoryanal(file, user):
     # loop through totals and add budget
     finallist = []
     for x in totals:
-        budget = dbquery.getbudget(user, x)
+        budget = dbquery.getbudget(user, x) #TODO: don't query db for each category
         if budget:
             totals[x] = {
                 'amount': totals[x],
@@ -273,7 +273,7 @@ def insert_mpesa_costs(user):
     new_keywords = ['Transaction cost']
     # check if they exist in db
     for x in new_keywords:
-        res = dbquery.checkcat(x, user)
+        res = dbquery.checkcat(x, user) #TODO: done once
         # if res is empty array then insert
         if not res:
             res2 = dbquery.insertmpesacosts(x, user)
@@ -328,3 +328,53 @@ def mpesa_time_analysis(file):
     return res
   
     
+def monthlycategoryanal(file, user):
+    df = mpesa_df(file)
+    df['Completion Time'] = pd.to_datetime(df['Completion Time']).dt.date
+    today = datetime.date.today()
+    # get first day of current month
+    first_day = today.replace(day=1)
+    # get all transcations from first day of month
+    df = df.loc[df['Completion Time'] >= first_day]
+    cats = dbquery.getcat(user, 'mpesa')
+
+    tmplist = []
+    for x in cats:
+        cat = df.loc[df['Details'].str.contains(x['details'], regex=False)]
+        tmplist.append(cat.to_dict('records'))
+    # compare category to details and create object with category and withdrawn
+    catlist2 = []
+    for z in tmplist:
+        for x in z:
+            for y in cats:
+                if x:
+                    if x['Details'] == y['details']:
+                        obj = {
+                            'cat': y['category'],
+                            'amount': x['Withdrawn'],
+                        }
+                        catlist2.append(obj)
+    # get similar cats and add withdrawal amount
+    totals = {}
+    for x in catlist2:
+        if x["cat"] in totals:
+            totals[x["cat"]] += x["amount"]
+        else:
+            totals[x["cat"]] = x["amount"]
+    # loop through totals and add budget
+    finallist = []
+    for x in totals:
+        budget = dbquery.getbudget(user, x)
+        if budget:
+            totals[x] = {
+                'amount': totals[x],
+                'budget': budget
+            }
+        else:
+            totals[x] = {
+                'amount': totals[x],
+                'budget': 0
+            }
+    return totals
+
+# print(monthlycategoryanal('mpesa_marto', 'marto')-
