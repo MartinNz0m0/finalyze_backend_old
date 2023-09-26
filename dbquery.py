@@ -57,19 +57,26 @@ def get_file_names(user, stttype):
 
     return file
 
-def insertcat(userinp, details, fuliza_dets, online_dets, user, sttype):
+def insertcat(userinp, details, fuliza_dets, online_dets, user, sttype, budget):
     currdate = date.today()
     mydb = db_pool.get_connection()
     try:
         mycursor = mydb.cursor()
         # Prepare the SQL statement with placeholders
-        sql = "INSERT INTO usermodel (name, details, category, date_added, statement_type) VALUES (%s, %s, %s, %s, %s)"
+        if budget:
+            sql = "INSERT INTO usermodel (name, details, category, date_added, statement_type, budget) VALUES (%s, %s, %s, %s, %s, %s)"
+            values = [
+                (user, details, userinp, currdate, sttype, budget),
+                (user, fuliza_dets, userinp, currdate, sttype, budget)
+            ]
+        else:
+            sql = "INSERT INTO usermodel (name, details, category, date_added, statement_type) VALUES (%s, %s, %s, %s, %s)"
 
-        # Prepare the values to be inserted
-        values = [
-            (user, details, userinp, currdate, sttype),
-            (user, fuliza_dets, userinp, currdate, sttype)
-        ]
+            # Prepare the values to be inserted
+            values = [
+                (user, details, userinp, currdate, sttype),
+                (user, fuliza_dets, userinp, currdate, sttype)
+            ]
 
         if online_dets:
             values.append((user, online_dets, userinp, currdate, sttype))
@@ -80,8 +87,8 @@ def insertcat(userinp, details, fuliza_dets, online_dets, user, sttype):
         mydb.commit()
 
         jibu = []
-        mycursor.execute(
-            "SELECT * FROM usermodel where statement_type = 'mpesa'")
+        s = f"SELECT * FROM usermodel where statement_type = '{sttype}' and name = '{user}'"
+        mycursor.execute(s)
         myresult = mycursor.fetchall()
         for x in myresult:
             jibu.append(x[2])
@@ -182,17 +189,18 @@ def editcategory(userinp, details, user, sttype, newbudget):
     try:
         mycursor = mydb.cursor(prepared=True)
         # Prepare the SQL statement with placeholders
-        sql = f"UPDATE usermodel SET category = %s WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
-        val = (userinp,)
+        if userinp == '' or userinp == None:
+            sql = f"UPDATE usermodel SET budget = %s WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
+            val = (newbudget,)
+        elif newbudget or newbudget not in ['0', 0]:
+            sql = f"UPDATE usermodel SET category = %s, budget = %s WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
+            val = (userinp, newbudget)
+        else:
+            sql = f"UPDATE usermodel SET category = %s WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
+            val = (userinp,)
         # Execute the prepared statement with values
         mycursor.execute(sql, val)
         mydb.commit()
-        if newbudget:
-            sqlbudget = f"UPDATE usermodel SET budget = %s WHERE category = '{userinp}' and name = '{user}' and statement_type = '{sttype}'"
-            mycursor.execute(sqlbudget, (newbudget,))
-            mydb.commit()
-        else:
-            print('no budget')
         jibu = []
         mycursor.execute(
             f"SELECT * FROM usermodel where statement_type = '{sttype}' and name = '{user}'")
@@ -200,7 +208,14 @@ def editcategory(userinp, details, user, sttype, newbudget):
         # close the cursor and database connection
         mycursor.close()
         mydb.close()
-        return myresult
+        # removes duplicates and fuliza
+        final_res = []
+        for i in myresult:
+            if 'fuliza' in i[3]:
+                continue
+            if i[3] not in [arr[3] for arr in final_res]:
+                final_res.append(i)
+        return final_res
     except mysql.connector.Error as error:
         mydb.close()
         print("Error: {}".format(error))
@@ -210,16 +225,31 @@ def deletecat(details, user, sttype):
     mydb = db_pool.get_connection()
     try:
         mycursor = mydb.cursor()
+        if 'Send money' in details:
+            fuliza = details.replace('Send money', 'Send money fuliza')
+        elif 'Buy goods' in details:
+            fuliza = details.replace('Buy goods', 'Buy goods fuliza')
+        elif 'Pay bill' in details:
+            fuliza = details.replace('Pay bill', 'Pay bill fuliza')
+        sqlf = f"DELETE FROM usermodel WHERE details = '{fuliza}' and name = '{user}' and statement_type = '{sttype}'"
         sql = f"DELETE FROM usermodel WHERE details = '{details}' and name = '{user}' and statement_type = '{sttype}'"
+        
         mycursor.execute(sql)
+        mycursor.execute(sqlf)
         mydb.commit()
 
         jibu = []
         mycursor.execute(f"SELECT * FROM usermodel where name = '{user}'")
         myresult = mycursor.fetchall()
-        return myresult
         mycursor.close()
         mydb.close()
+        final_res = []
+        for i in myresult:
+            if 'fuliza' in i[3]:
+                continue
+            if i[3] not in [arr[3] for arr in final_res]:
+                final_res.append(i)
+        return final_res
     except mysql.connector.Error as error:
         mydb.close()
         print("Error: {}".format(error))
@@ -446,7 +476,7 @@ def check_last_sync(user):
         if dbreq == []:
             # generate date of last 24 hours
             date = datetime.now()
-            lsync = date - timedelta(days=1)
+            lsync = date - timedelta(days=7)
             insertfile(user, f'mpesa_{user}', 'mpesa', '2023-08-01 - 2023-08-02', date, lsync) # TODO: change db
             return lsync
         return dbreq[0][6]
@@ -474,5 +504,21 @@ def insertfile(user, file, sttype, date, date_uploaded, last_synced=None):
         return 'ok'
     except mysql.connector.Error as error:
         mydb.close()
+        print("Error: {}".format(error))
+        return 'Error', error
+
+def get_dets_by_cat(user, cat, sttype):
+    try:
+        sql = f"SELECT * FROM usermodel WHERE name = %s and category = %s and statement_type = %s"
+        val = (user, cat, sttype)
+        dbreq = db_select(sql, val)
+        final = []
+        for x in dbreq:
+            final.append({
+                'details': x[2],
+                'budget': x[6],
+            })
+        return final
+    except mysql.connector.Error as error:
         print("Error: {}".format(error))
         return 'Error', error

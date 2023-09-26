@@ -16,9 +16,11 @@ server.zip
 #components
 Server.code-workspace
 /uploads
+/cache
 /__pycache__
 .env
 finalyze.sql
+pandasai.log
 
 
 # misc

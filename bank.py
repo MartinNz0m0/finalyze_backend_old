@@ -7,6 +7,7 @@ import re
 import dbquery
 import pdfplumber
 import userinput
+import mpesa_funcs
 
 
 def coopcsv(x):
@@ -645,7 +646,7 @@ def overspend_index(user):
     # categoryanal for each file
     ov_totals = []
     for x in mpesa_files:
-        res = userinput.categoryanal(x, user)
+        res = mpesa_funcs.categoryanal(x, user)
         ov = 0
         tt = len(res[0])
         if res[0]:

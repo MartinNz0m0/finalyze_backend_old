@@ -3,6 +3,8 @@ import numpy as np
 import mysql.connector
 from flask import *
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
 import datetime
 import dbquery
 import searchfunc
@@ -13,8 +15,7 @@ import redis_funcs
 import bank
 import auth
 import msgreader
-from dotenv import load_dotenv
-import os
+import finalyzeai
 
 load_dotenv()
 
@@ -107,6 +108,7 @@ def insertcat():
     userinp = request.json.get('userinput')
     details = request.json.get('det')
     sttype = request.json.get('stttype')
+    budget = request.json.get('budget')
     auth_header = request.headers.get('Authorization')
     if auth_header is not None and auth_header.startswith('Bearer '):
     # Extract the JWT from the Authorization header
@@ -121,7 +123,7 @@ def insertcat():
             return jsonify({'message': 'Invalid credentials'}), 401
         else:
             if sttype == 'mpesa':
-                res = mpesa_funcs.usersubmit(userinp, details, user, sttype)
+                res = mpesa_funcs.usersubmit(userinp, details, user, sttype, budget)
                 # redis_funcs.redis_del(user, 'allcats')
                 # redis_funcs.redis_del(user, 'dashdata')
                 # redis_funcs.redis_del(user, 'categoryanalmpesa')
@@ -151,17 +153,17 @@ def getallcats():
             if redis_funcs.redis_exists(user, 'allcats'):
                 res = redis_funcs.redis_get(user, 'allcats')
                 res = json.loads(res)
+                return jsonify(res)
             else:
                 res = dbquery.getallcategories(user)
-                redis_funcs.redis_set(user, 'allcats', json.dumps(res))
-            if removeduplicates == True:
                 finalres = []
                 for i in res:
+                    if 'fuliza' in i[3]:
+                        continue
                     if i[3] not in [arr[3] for arr in finalres]:
                         finalres.append(i)
+                redis_funcs.redis_set(user, 'allcats', json.dumps(finalres))
                 return jsonify(finalres)
-            else:
-                return jsonify(res)
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
@@ -238,7 +240,13 @@ def dashdata():
             else:
                 print('getting cats from db')
                 cats = dbquery.getallcategories(user) #TODO: get from redis
-                redis_funcs.redis_set(user, 'allcats', json.dumps(cats))
+                finalres = []
+                for i in cats:
+                    if 'fuliza' in i[3]:
+                        continue
+                    if i[3] not in [arr[3] for arr in finalres]:
+                        finalres.append(i)
+                redis_funcs.redis_set(user, 'allcats', json.dumps(finalres))
             # create empy array for categories
             category = []
             # create empy array for total budget
@@ -259,10 +267,11 @@ def dashdata():
             totalbudget = 0
             for x in budget:
                 totalbudget += int(x)           
+            lft = mpesa_funcs.lefttospend(f'mpesa_{user}', user, totalbudget)
             ind = bank.overspend_index(user) 
-            dash_list = [len(category), totalbudget, round(ind, 1)]
+            dash_list = [len(category), totalbudget, round(ind, 1), lft]
             redis_funcs.redis_set(user, 'dashdata', json.dumps(dash_list))         
-            return [len(category), totalbudget, round(ind, 1)]
+            return [len(category), totalbudget, round(ind, 1), lft]
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
 
@@ -401,6 +410,7 @@ def msgreceive():
             msg = request.json.get('msg')
             res = msgreader.mpesa_csvwriter(f"mpesa_{user}.csv", msg, user)
             if res == "ok":
+                redis_funcs.redis_del_all(user)
                 return jsonify("ok")
             else:
                 return jsonify("ok") # TODO: change this to failed
@@ -419,7 +429,131 @@ def lastsync():
             res = dbquery.check_last_sync(user) #TODO: get from redis
             if res == 'no sync':
                 return jsonify(res)
-            return jsonify(res.strftime("%Y-%m-%d %H:%M:%S.000Z"))
+            return jsonify(res.strftime("%Y-%m-%d %H:%M:%S.000"))
+
+@app.route('/monthlycats', methods=['POST'])
+def monthlycats():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            if redis_funcs.redis_exists(user, 'monthlycats'):
+                res = redis_funcs.redis_get(user, 'monthlycats')
+                res = json.loads(res)
+                return jsonify(res)
+            else:
+                res = mpesa_funcs.monthlycategoryanal(f"mpesa_{user}" ,user)
+                redis_funcs.redis_set(user, 'monthlycats', json.dumps(res))
+                return jsonify(res)
+
+@app.route('/paidinout', methods=['POST'])
+def paidinout():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            if redis_funcs.redis_exists(user, 'paidinout'):
+                res = redis_funcs.redis_get(user, 'paidinout')
+                res = json.loads(res)
+                return jsonify(res)
+            else:
+                res = mpesa_funcs.paidinoutdaily(f"mpesa_{user}")
+                redis_funcs.redis_set(user, 'paidinout', json.dumps(res), 7200)
+                return jsonify(res)
+
+@app.route('/chkfile', methods=['POST'])
+def chkfile():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            res = dbquery.get_file_names(user, 'mpesa')
+            return jsonify(res)
+
+@app.route('/catanalysis', methods=['POST'])
+def catanal():
+    auth_header = request.headers.get('Authorization')
+    cat = request.json.get('cat')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            if redis_funcs.redis_exists(user, f'catanalysis{cat}'):
+                res = redis_funcs.redis_get(user, f'catanalysis{cat}')
+                res = json.loads(res)
+                return jsonify(res)
+            else:
+                res = mpesa_funcs.check_dets(user, cat)
+                redis_funcs.redis_set(user, f'catanalysis{cat}', json.dumps(res))
+                return jsonify(res)
+
+@app.route('/finalyzechat', methods=['POST'])
+def finalyzeaitalk():
+    auth_header = request.headers.get('Authorization')
+    prompt = request.json.get('prompt')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            res = finalyzeai.finalyze_ai_chat(user, prompt)
+            return jsonify(res)
+
+@app.route('/avgpaidinout', methods=['POST'])
+def avgpaidinout():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            if redis_funcs.redis_exists(user, 'avgpaidinout'):
+                res = redis_funcs.redis_get(user, 'avgpaidinout')
+                res = json.loads(res)
+                return jsonify(res)
+            else:
+                res = mpesa_funcs.mpesa_time_analysis(f'mpesa_{user}')
+                redis_funcs.redis_set(user, 'avgpaidinout', json.dumps(res))
+                return jsonify(res)
+
+
+@app.route('/moneyoutstats', methods=['POST'])
+def moneyoutstats():
+    auth_header = request.headers.get('Authorization')
+    if auth_header is not None and auth_header.startswith('Bearer '):
+        jibu = auth.jwt_verify(auth_header)
+        if jibu == 'invalid':
+            return jsonify({'message': 'Invalid credentials'}), 401
+        else:
+            user = jibu[0]
+            if redis_funcs.redis_exists(user, 'moneyoutstats'):
+                res = redis_funcs.redis_get(user, 'moneyoutstats')
+                res = json.loads(res)
+                return jsonify(res)
+            else:
+                sndmny = mpesa_funcs.sndmoney(user)
+                till = mpesa_funcs.tillpay(user)
+                pbillpay = mpesa_funcs.pbillpay(user)
+                res = {
+                    'sndmny': sndmny,
+                    'till': till,
+                    'pbill': pbillpay
+                }
+                redis_funcs.redis_set(user, 'moneyoutstats', json.dumps(res))
+                return jsonify(res)
 
 if __name__ == '__main__':
     app.run(port=8001)
@@ -431,17 +565,3 @@ if __name__ == '__main__':
 
     
 
-
-
-# print(group.tail())   
-
-   
-# replace the details info with proper info so it does not confuse, business payment is example 
-
-# get count for fuliza transactions
-
-
-
-# get completed time and group transactions by date
-
-# calculate the variance from the mean? for each group
